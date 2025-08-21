@@ -1,4 +1,3 @@
-import { table } from 'node:console';
 import fs from 'node:fs/promises';
 
 const DATABASE_PATH = new URL('db.json', import.meta.url);
@@ -30,8 +29,16 @@ export class Database {
     this.#persist();
   }
 
-  select(table) {
+  select(table, filters) {
     let data = this.#database[table] ?? [];
+
+    if (filters) {
+      data = data.filter(row => {
+        return Object.entries(filters).some(([key, value]) => {
+          return row[key].toLowerCase().includes(value.toLowerCase());
+        });
+      });
+    }
 
     return data;
   }
